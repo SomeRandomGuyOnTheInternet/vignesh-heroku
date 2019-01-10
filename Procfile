@@ -1,2 +1,3 @@
-web: gunicorn app:run
+web: gunicorn foodhubsg:app
+
 
