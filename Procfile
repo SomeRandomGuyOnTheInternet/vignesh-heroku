@@ -1,3 +1,3 @@
-web: gunicorn app:foodhubsg
+web: gunicorn __init__:foodhubsg
 
 
