@@ -50,6 +50,9 @@ def load_logged_in_user():
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
+    if g.user is not None:
+        return redirect(url_for('food.index'))
+
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -85,11 +88,12 @@ def register():
 
         name = name.title()
         email = email.lower()
+        location = "Ang Mo Kio"
 
         if error is None:
             db.execute(
-                'INSERT INTO user (email, password, name, height, weight) VALUES (?, ?, ?, ?, ?)',
-                (email, generate_password_hash(password), name, height, weight)
+                'INSERT INTO user (email, password, name, height, weight, location) VALUES (?, ?, ?, ?, ?, ?)',
+                (email, generate_password_hash(password), name, height, weight, location)
             )
             db.commit()
 
@@ -107,6 +111,9 @@ def register():
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     """Log in a registered user by adding the user id to the session."""
+    if g.user is not None:
+        return redirect(url_for('food.index'))
+
     if request.method == 'POST':
         email = request.form['email'].lower()
         password = request.form['password']
@@ -137,7 +144,11 @@ def login():
 
 @bp.route('/change_password', methods=('GET', 'POST'))
 def change_password():
+    if g.user is not None:
+        return redirect(url_for('food.index'))
+
     session.clear()
+
     if request.method == 'POST':
         email = request.form['email'].lower()
         password = request.form['password']
@@ -186,6 +197,9 @@ def change_password():
 
 @bp.route('/reset', methods=['GET','POST'])
 def reset():
+    if g.user is not None:
+        return redirect(url_for('food.index'))
+
     if request.method =='POST':
         db = get_db()
         error = None
@@ -201,6 +215,7 @@ def reset():
             )
             mail.send(msg)
     return render_template("auth/forgot_password.html")
+
 @bp.route('/logout')
 def logout():
     """Clear the current session, including the stored user id."""
